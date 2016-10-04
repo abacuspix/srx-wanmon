@@ -1,0 +1,24 @@
+<html>
+<head>
+<title> SD-WAN Stats </title>
+</head>
+ <body>
+ <script type=text/javascript>
+
+ function update_values() {
+             $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+             $.getJSON($SCRIPT_ROOT+"/get_statistics",
+                 function(data) {
+
+                 });
+         }
+
+ </script>
+ <table>
+ <tr>
+ <td><u>request.json['foo']</u></td>
+ <td><u>''' + device_stats["approute"]["table"] + '''</u></td>
+ </tr>
+ </table>
+ <body>
+ </html>
