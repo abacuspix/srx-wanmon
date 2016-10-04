@@ -102,9 +102,6 @@ def collectStats (devices):
 
 
 
-    print device_stats
-
-
 def statLoop (devices):
 
     while True:
