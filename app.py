@@ -68,15 +68,12 @@ def collectSessions (device):
 
     return  device_sessions
 
-<<<<<<< HEAD
-def statLoop (devices):
-=======
+
 device_sessions = {}
 
 def statLoop (device):
 
     global device_sessions
->>>>>>> origin/master
 
     while True:
 
@@ -102,11 +99,7 @@ thread.start_new_thread( statLoop , (d,)  )
 
 app = flask.Flask(__name__)
 
-<<<<<<< HEAD
-@app.route('/_get_statistics')
-def get_statistics():
-    print "running get statistics api"
-=======
+
 @app.route('/_get_sessions')
 def get_sessions():
     return jsonify( device_sessions )
@@ -116,11 +109,6 @@ def get_sessions():
 def get_statistics():
     return jsonify( ipm_status = device_stats["ipm_status"] , rpm_current_probes_percent_lost = device_stats["rpm_results"]["current_probes_percent_lost"] , rpm_current_probes_sent = device_stats["rpm_results"]["current_probes_sent"], rpm_last_probes_percent_lost = device_stats["rpm_results"]["last_probes_percent_lost"] , rpm_last_probes_sent = device_stats["rpm_results"]["last_probes_sent"] , rpm_current_probes_received = device_stats["rpm_results"]["current_probes_received"] , rpm_target_interface =  device_stats["rpm_results"]["target_interface"], rpm_last_probes_received = device_stats["rpm_results"]["last_probes_received"] , rpm_target_address = device_stats["rpm_results"]["target_address"] , alt_if_fw_state_count = device_stats["alt_if_fw_state_count"]["state_count"] , prime_if_fw_state_count = device_stats["prime_if_fw_state_count"]["state_count"], inet_table=device_stats["inet0"]["table"] , inet_route = device_stats["inet0"]["route"] , inet_route_nh = device_stats["inet0"]["nh_if"] , alt_table=device_stats["approute"]["table"] , alt_table_route = device_stats["approute"]["route"] , alt_table_nh = device_stats["approute"]["nh_if"] , gr_if_ibps = device_stats["gr_if"]["ibps"] , gr_if_ipps = device_stats["gr_if"]["ipps"] , gr_if_obps = device_stats["gr_if"]["obps"] , gr_if_opps =  device_stats["gr_if"]["opps"] , st_if_ibps = device_stats["st_if"]["ibps"] , st_if_ipps = device_stats["st_if"]["ipps"] , st_if_obps = device_stats["st_if"]["obps"] , st_if_opps = device_stats["st_if"]["opps"] )
 
-@app.route('/')
-def index():
->>>>>>> origin/master
-
-    return jsonify( inet_table=device_stats["inet0"]["table"] , inet_route = device_stats["inet0"]["route"] , inet_route_nh = device_stats["inet0"]["nh_if"] , alt_table=device_stats["approute"]["table"] , alt_table_route = device_stats["approute"]["route"] , alt_table_nh = device_stats["approute"]["nh_if"] , gr_if_ibps = device_stats["gr_if"]["ibps"] , gr_if_ipps = device_stats["gr_if"]["ipps"] , gr_if_obps = device_stats["gr_if"]["obps"] , gr_if_opps =  device_stats["gr_if"]["opps"] , st_if_ibps = device_stats["st_if"]["ibps"] , st_if_ipps = device_stats["st_if"]["ipps"] , st_if_obps = device_stats["st_if"]["obps"] , st_if_opps = device_stats["st_if"]["opps"] )
 
 @app.route('/')
 def index():
@@ -128,10 +116,6 @@ def index():
     <html>
     <head>
     <title> SD-WAN Stats </title>
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
     </head>
@@ -194,9 +178,6 @@ def index():
 
     <tr>
 
-<<<<<<< HEAD
-    <script type=text/javascript>
-=======
     <td>
     <table>
     <tr><td>Current Probe Results</td></tr>
@@ -370,7 +351,6 @@ def index():
     </script>
     </body>
     </html>
->>>>>>> origin/master
 
     setInterval(
         function()
