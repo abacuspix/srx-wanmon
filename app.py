@@ -72,7 +72,7 @@ def statLoop (device):
 
 devices = []
 
-devices.append( Device(host='172.16.237.98', user='root', password='Welcome!') )
+devices.append( Device(host='192.168.57.2', user='root', password='Welcome!') )
 
 for d in devices:
     try:
@@ -210,150 +210,128 @@ def index():
 
 
     <script type=text/javascript>
-
-    $.getJSON("/_get_sessions", function (data) {
-
-
-        $.each( data, function( interface, state ) {
-
-            var stateTable = document.getElementById("stateTable")
-
-            var interface_tr = document.createElement("tr");
-
-            var interface_td_label = document.createElement("td");
-            var interface_td_label_text = document.createTextNode( "Interface:" );
-
-            interface_td_label.appendChild( interface_td_label_text );
-
-            var interface_td = document.createElement("td");
-            var interface_td_text = document.createTextNode( JSON.stringify(interface) );
-
-            interface_td.appendChild( interface_td_text );
-
-            interface_tr.appendChild( interface_td_label );
-            interface_tr.appendChild( interface_td );
-
-            stateTable.appendChild( interface_tr );
-
-
-            for (i = 0; i < state.length; i++) {
-
-                var sess_id_tr = document.createElement("tr");
-
-                var sess_id_td_label = document.createElement("td");
-                var sess_id_td_label_text = document.createTextNode( "Session ID:" );
-
-                sess_id_td_label.appendChild( sess_id_td_label_text );
-
-                var sess_id_td = document.createElement("td");
-                var sess_id_td_text = document.createTextNode( state[i].id );
-
-                sess_id_td.appendChild( sess_id_td_text );
-
-                sess_id_tr.appendChild( sess_id_td_label );
-                sess_id_tr.appendChild( sess_id_td );
-
-                stateTable.appendChild( sess_id_tr );
-
-                var ips_tr = document.createElement("tr");
-
-                var source_ip_td_label = document.createElement("td");
-                var source_ip_td_label_text = document.createTextNode( "Source:" );
-
-                source_ip_td_label.appendChild( source_ip_td_label_text );
-
-                var source_td = document.createElement("td");
-
-                var source_string = state[i].source_ip.concat(":"+state[i].source_port);
-
-                var source_td_text = document.createTextNode( source_string );
-
-                source_td.appendChild( source_td_text );
-
-                ips_tr.appendChild( source_ip_td_label );
-                ips_tr.appendChild( source_td );
-
-
-                var dest_ip_td_label = document.createElement("td");
-                var dest_ip_td_label_text = document.createTextNode( "Destination:" );
-
-                dest_ip_td_label.appendChild( dest_ip_td_label_text );
-
-                var dest_td = document.createElement("td");
-
-                var dest_string = state[i].destination_ip.concat(":"+state[i].destination_port);
-
-                var dest_td_text = document.createTextNode( dest_string );
-
-                dest_td.appendChild( dest_td_text );
-
-                ips_tr.appendChild( dest_ip_td_label );
-                ips_tr.appendChild( dest_td );
-
-
-                stateTable.appendChild( ips_tr );
-
-
-                var app_tr = document.createElement("tr");
-
-                var app_td_label = document.createElement("td");
-                var app_td_label_text = document.createTextNode( "Application:" );
-
-                app_td_label.appendChild( app_td_label_text );
-
-                var app_td = document.createElement("td");
-                var app_td_text = document.createTextNode( state[i].app_name );
-
-                app_td.appendChild( app_td_text );
-
-                app_tr.appendChild( app_td_label );
-                app_tr.appendChild( app_td );
-
-                stateTable.appendChild( app_tr );
-
-
-
-
-            };
-
-        });
-
-    });
-
-    setInterval(
+        setInterval(
         function()
             {
+            $.getJSON("/_get_sessions", function (data) {
 
-                $.getJSON("/_get_statistics",
-                {},
-                function(data) {
-                    $("#inettable").text(data.inet_table);
-                    $("#alttable").text(data.alt_table);
+                var stateTable = document.getElementById("stateTable")
 
-                    $("#inetroute").text(data.inet_route);
-                    $("#altroute").text(data.alt_table_route);
+                stateTable.innerHTML = "";
 
-                    $("#inet_route_nh").text(data.inet_route_nh);
-                    $("#alt_route_nh").text(data.alt_table_nh);
-
-                    $("#gr_if_ibps").text(data.gr_if_ibps);
-                    $("#gr_if_obps").text(data.gr_if_obps);
-                    $("#gr_if_ipps").text(data.gr_if_ipps);
-                    $("#gr_if_opps").text(data.gr_if_opps);
-
-                    $("#st_if_ibps").text(data.st_if_ibps);
-                    $("#st_if_obps").text(data.st_if_obps);
-                    $("#st_if_ipps").text(data.st_if_ipps);
-                    $("#st_if_opps").text(data.st_if_opps);
-
-                    $("#prime_if_fw_state_count").text(data.prime_if_fw_state_count);
-                    $("#alt_if_fw_state_count").text(data.alt_if_fw_state_count);
+                $.each( data, function( interface, state ) {
 
 
+
+
+                    var interface_tr = document.createElement("tr");
+
+                    var interface_td_label = document.createElement("td");
+                    var interface_td_label_text = document.createTextNode( "Interface:" );
+
+                    interface_td_label.appendChild( interface_td_label_text );
+
+                    var interface_td = document.createElement("td");
+                    var interface_td_text = document.createTextNode( JSON.stringify(interface) );
+
+                    interface_td.appendChild( interface_td_text );
+
+                    interface_tr.appendChild( interface_td_label );
+                    interface_tr.appendChild( interface_td );
+
+                    stateTable.appendChild( interface_tr );
+
+
+                    for (i = 0; i < state.length; i++) {
+
+                        var sess_id_tr = document.createElement("tr");
+
+                        var sess_id_td_label = document.createElement("td");
+                        var sess_id_td_label_text = document.createTextNode( "Session ID:" );
+
+                        sess_id_td_label.appendChild( sess_id_td_label_text );
+
+                        var sess_id_td = document.createElement("td");
+                        var sess_id_td_text = document.createTextNode( state[i].id );
+
+                        sess_id_td.appendChild( sess_id_td_text );
+
+                        sess_id_tr.appendChild( sess_id_td_label );
+                        sess_id_tr.appendChild( sess_id_td );
+
+                        stateTable.appendChild( sess_id_tr );
+
+                        var ips_tr = document.createElement("tr");
+
+                        var source_ip_td_label = document.createElement("td");
+                        var source_ip_td_label_text = document.createTextNode( "Source:" );
+
+                        source_ip_td_label.appendChild( source_ip_td_label_text );
+
+                        var source_td = document.createElement("td");
+
+                        var source_string = state[i].source_ip.concat(":"+state[i].source_port);
+
+                        var source_td_text = document.createTextNode( source_string );
+
+                        source_td.appendChild( source_td_text );
+
+                        ips_tr.appendChild( source_ip_td_label );
+                        ips_tr.appendChild( source_td );
+
+
+                        var dest_ip_td_label = document.createElement("td");
+                        var dest_ip_td_label_text = document.createTextNode( "Destination:" );
+
+                        dest_ip_td_label.appendChild( dest_ip_td_label_text );
+
+                        var dest_td = document.createElement("td");
+
+                        var dest_string = state[i].destination_ip.concat(":"+state[i].destination_port);
+
+                        var dest_td_text = document.createTextNode( dest_string );
+
+                        dest_td.appendChild( dest_td_text );
+
+                        ips_tr.appendChild( dest_ip_td_label );
+                        ips_tr.appendChild( dest_td );
+
+
+                        stateTable.appendChild( ips_tr );
+
+
+                        var app_tr = document.createElement("tr");
+
+                        var app_td_label = document.createElement("td");
+                        var app_td_label_text = document.createTextNode( "Application:" );
+
+                        app_td_label.appendChild( app_td_label_text );
+
+                        var app_td = document.createElement("td");
+                        var app_td_text = document.createTextNode( state[i].app_name );
+
+                        app_td.appendChild( app_td_text );
+
+                        app_tr.appendChild( app_td_label );
+                        app_tr.appendChild( app_td );
+
+                        stateTable.appendChild( app_tr );
+
+
+
+
+                    };
 
                 });
-            },
-            1000);
+
+            });
+        },
+        1000);
+
+
+
+
+
     </script>
     </body>
     </html>
