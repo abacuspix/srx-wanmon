@@ -1,3 +1,7 @@
+#! /usr/bin/python
+from lxml import etree
+import xml.etree.ElementTree as ET
+
 from jnpr.junos import Device
 
 
@@ -56,16 +60,74 @@ def ifstats (device_connection, ifName ):
     return { "interface" : ifName, "ibps": ibps ,  "ipps": ipps , "obps" : obps , "opps" : opps }
 
 
-def if_fw_state (device_connection, ifName ):
+def if_fw_state_count (device_connection, ifName ):
     collect_fw_state_count = device_connection.rpc.get_flow_session_information(interface=ifName)
 
     fw_state_count_finder = collect_fw_state_count.findall('displayed-session-count')
 
-    print fw_state_count_finder
-
     fw_state_count = ns(fw_state_count_finder[0].text)
 
-    print { "interface" : ifName , "state_count" : fw_state_count }
-
     return { "interface" : ifName , "state_count" : fw_state_count  }
+
+
+def if_fw_states (device_connection, ifName ):
+    collect_fw_states = device_connection.rpc.get_flow_session_information(interface=ifName)
+
+    fw_state_finder = collect_fw_states.findall('flow-session')
+
+    all_states = []
+
+    #root = collect_fw_states.getroot()
+    for states in collect_fw_states:
+
+        state = {}
+
+        session_id = states.xpath('./session-identifier/text()')
+
+        if len ( session_id ) > 0:
+            session_id = ns(session_id[0])
+
+        state["id"] = session_id
+
+        app_name = states.xpath('./dynamic-application-name/text()')
+
+        if len(app_name) > 0:
+            app_name = ns(app_name[0])
+
+        state["app_name"] = app_name
+
+        source_ip = states.xpath('./flow-information/source-address/text()')
+
+        if len(source_ip) > 0:
+            source_ip = ns(source_ip[0])
+
+        state["source_ip"] = source_ip
+
+        destination_ip = states.xpath('./flow-information/destination-address/text()')
+
+        if len(destination_ip) > 0:
+            destination_ip = ns(destination_ip[0])
+
+        state["destination_ip"] = destination_ip
+
+        destination_port = states.xpath('./flow-information/destination-port/text()')
+
+        if len(destination_port) > 0:
+            destination_port = ns(destination_port[0])
+
+        state["destination_port"] = destination_port
+
+        source_port = states.xpath('./flow-information/source-port/text()')
+
+        if len(source_port) > 0:
+            source_port = ns(source_port[0])
+
+        state["source_port"] = source_port
+
+        if len(state["destination_ip"]) >= 1 and len(state["source_ip"]) >= 1 :
+            all_states.append(state)
+
+    return all_states
+
+
 
