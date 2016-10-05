@@ -41,7 +41,9 @@ def collectStats (device):
 
     device_stats["approute"] = app_route_dict
 
-    device_stats["rpm_results"] = collectRPMStats(d)
+    device_stats["rpm_results"] = collectRPMStats(device)
+
+    print device_stats["rpm_results"]
 
     device_stats["prime_if_fw_state_count"] = if_fw_state_count(device , "gr-0/0/0.0")
 
@@ -103,7 +105,7 @@ def get_sessions():
 
 @app.route('/_get_statistics')
 def get_statistics():
-    return jsonify( alt_if_fw_state_count = device_stats["alt_if_fw_state_count"]["state_count"] , prime_if_fw_state_count = device_stats["prime_if_fw_state_count"]["state_count"], inet_table=device_stats["inet0"]["table"] , inet_route = device_stats["inet0"]["route"] , inet_route_nh = device_stats["inet0"]["nh_if"] , alt_table=device_stats["approute"]["table"] , alt_table_route = device_stats["approute"]["route"] , alt_table_nh = device_stats["approute"]["nh_if"] , gr_if_ibps = device_stats["gr_if"]["ibps"] , gr_if_ipps = device_stats["gr_if"]["ipps"] , gr_if_obps = device_stats["gr_if"]["obps"] , gr_if_opps =  device_stats["gr_if"]["opps"] , st_if_ibps = device_stats["st_if"]["ibps"] , st_if_ipps = device_stats["st_if"]["ipps"] , st_if_obps = device_stats["st_if"]["obps"] , st_if_opps = device_stats["st_if"]["opps"] )
+    return jsonify( rpm_current_probes_percent_lost = device_stats["rpm_results"]["current_probes_percent_lost"] , rpm_current_probes_sent = device_stats["rpm_results"]["current_probes_sent"], rpm_last_probes_percent_lost = device_stats["rpm_results"]["last_probes_percent_lost"] , rpm_last_probes_sent = device_stats["rpm_results"]["last_probes_sent"] , rpm_current_probes_received = device_stats["rpm_results"]["current_probes_received"] , rpm_target_interface =  device_stats["rpm_results"]["target_interface"], rpm_last_probes_received = device_stats["rpm_results"]["last_probes_received"] , rpm_target_address = device_stats["rpm_results"]["target_address"] , alt_if_fw_state_count = device_stats["alt_if_fw_state_count"]["state_count"] , prime_if_fw_state_count = device_stats["prime_if_fw_state_count"]["state_count"], inet_table=device_stats["inet0"]["table"] , inet_route = device_stats["inet0"]["route"] , inet_route_nh = device_stats["inet0"]["nh_if"] , alt_table=device_stats["approute"]["table"] , alt_table_route = device_stats["approute"]["route"] , alt_table_nh = device_stats["approute"]["nh_if"] , gr_if_ibps = device_stats["gr_if"]["ibps"] , gr_if_ipps = device_stats["gr_if"]["ipps"] , gr_if_obps = device_stats["gr_if"]["obps"] , gr_if_opps =  device_stats["gr_if"]["opps"] , st_if_ibps = device_stats["st_if"]["ibps"] , st_if_ipps = device_stats["st_if"]["ipps"] , st_if_obps = device_stats["st_if"]["obps"] , st_if_opps = device_stats["st_if"]["opps"] )
 
 @app.route('/')
 def index():
@@ -160,6 +162,43 @@ def index():
 
     <br>
     <br>
+
+    <table>
+    <tr> WAN Performance Statistics </tr>
+    <tr>
+    <td>Monitored IP Address:</td>
+    <td><div id="rpm_target_address"></div></td>
+    <td>Monitored Inteface:</td>
+    <td><div id="rpm_target_interface"></div></td>
+    </tr>
+
+    <tr>
+
+    <td>
+    <table>
+    <tr><td>Current Probe Results</td></tr>
+    <tr><td>Probes Sent:</td><td><div id="rpm_current_probes_sent"></div></td></tr>
+    <tr><td>Probes Received:</td><td><div id="rpm_current_probes_received"></div></td></tr>
+    <tr><td>Percentage of Probes Lost:</td><td><div id="rpm_current_probes_percent_lost"></div></td></tr>
+    </table>
+    </td>
+
+
+    <td>
+    <table>
+    <tr><td>Previous Probe Results</td></tr>
+    <tr><td>Probes Sent:</td><td><div id="rpm_last_probes_sent"></div></td></tr>
+    <tr><td>Probes Received:</td><td><div id="rpm_last_probes_received"></div></td></tr>
+    <tr><td>Percentage of Probes Lost:</td><td><div id="rpm_last_probes_percent_lost"></div></td></tr>
+    </table>
+    </td>
+
+    </tr>
+
+    </table>
+
+    <br>
+    <br>
     <table>
     <tr>
     <td>Primary WAN Session Count</td>
@@ -209,6 +248,20 @@ def index():
 
                     $("#prime_if_fw_state_count").text(data.prime_if_fw_state_count);
                     $("#alt_if_fw_state_count").text(data.alt_if_fw_state_count);
+
+                    $("#rpm_target_address").text(data.rpm_target_address);
+                    $("#rpm_target_interface").text(data.rpm_target_interface);
+
+                    $("#rpm_current_probes_sent").text(data.rpm_current_probes_sent);
+                    $("#rpm_current_probes_received").text(data.rpm_current_probes_received);
+                    $("#rpm_current_probes_percent_lost").text(data.rpm_current_probes_percent_lost);
+
+                    $("#rpm_last_probes_sent").text(data.rpm_last_probes_sent);
+                    $("#rpm_last_probes_received").text(data.rpm_last_probes_received);
+                    $("#rpm_last_probes_percent_lost").text(data.rpm_last_probes_percent_lost);
+
+
+
                 });
             },
             1000);

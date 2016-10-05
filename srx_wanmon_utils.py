@@ -136,22 +136,25 @@ def collectRPMStats(device_connection):
 
     collect_rpm_stats = device_connection.rpc.get_probe_results()
 
-    target_address = collect_rpm_stats.xpath("./probe-test-results/target-address/text()")
+    target_address = collect_rpm_stats.xpath("./probe-test-results/target-address/text()")[0]
 
-    target_interface = collect_rpm_stats.xpath("./probe-test-results/destination-interface/text()")
+    target_interface = collect_rpm_stats.xpath("./probe-test-results/destination-interface/text()")[0]
 
-    current_probes_sent = collect_rpm_stats.xpath("./probe-test-results/probe-test-current-results/probe-test-generic-results/probes-sent/text()")
+    current_probes_sent = collect_rpm_stats.xpath("./probe-test-results/probe-test-current-results/probe-test-generic-results/probes-sent/text()")[0]
 
-    current_probes_received = collect_rpm_stats.xpath("./probe-test-results/probe-test-current-results/probe-test-generic-results/probe-responses/text()")
+    current_probes_received = collect_rpm_stats.xpath("./probe-test-results/probe-test-current-results/probe-test-generic-results/probe-responses/text()")[0]
 
-    current_probes_percent_lost = collect_rpm_stats.xpath("./probe-test-results/probe-test-current-results/probe-test-generic-results/loss-percentage/text()")
+    current_probes_percent_lost = collect_rpm_stats.xpath("./probe-test-results/probe-test-current-results/probe-test-generic-results/loss-percentage/text()")[0]
 
-    last_probes_sent = collect_rpm_stats.xpath("./probe-test-results/probe-last-test-results/probe-test-generic-results/probes-sent/text()")
+    last_probes_sent = collect_rpm_stats.xpath("./probe-test-results/probe-last-test-results/probe-test-generic-results/probes-sent/text()")[0]
 
-    last_probes_received = collect_rpm_stats.xpath("./probe-test-results/probe-last-test-results/probe-test-generic-results/probe-responses/text()")
+    last_probes_received = collect_rpm_stats.xpath("./probe-test-results/probe-last-test-results/probe-test-generic-results/probe-responses/text()")[0]
 
-    last_probes_percent_lost = collect_rpm_stats.xpath("./probe-test-results/probe-last-test-results/probe-test-generic-results/loss-percentage/text()")
+    last_probes_percent_lost = collect_rpm_stats.xpath("./probe-test-results/probe-last-test-results/probe-test-generic-results/loss-percentage/text()")[0]
 
     rpm_results = { "target_address" : target_address , "target_interface" : target_interface , "current_probes_sent" : current_probes_sent, "current_probes_received" : current_probes_received, "current_probes_percent_lost" : current_probes_percent_lost, "last_probes_sent" : last_probes_sent, "last_probes_received" : last_probes_received, "last_probes_percent_lost" : last_probes_percent_lost}
 
     return rpm_results
+
+
+
