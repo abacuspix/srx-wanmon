@@ -43,6 +43,8 @@ def collectStats (device):
 
     device_stats["rpm_results"] = collectRPMStats(device)
 
+    device_stats["ipm_status"] = collectIPMStatus(device)
+
     device_stats["prime_if_fw_state_count"] = if_fw_state_count(device , "gr-0/0/0.0")
 
     device_stats["alt_if_fw_state_count"] = if_fw_state_count(device , "st0.0")
@@ -52,8 +54,6 @@ def collectStats (device):
     device_sessions["gr-0/0/0.0"] = if_fw_states (device, "gr-0/0/0.0")
 
     device_sessions["st0.0"] = if_fw_states(device, "st0.0")
-
-    device_stats["ipm_status"] = collectIPMStatus(device)
 
     return  device_sessions
 
@@ -346,12 +346,6 @@ def index():
         1000);
 
 
-
-
-    </script>
-    </body>
-    </html>
-
     setInterval(
         function()
             {
@@ -390,3 +384,4 @@ def index():
     '''
 
 app.run(debug=True, port=8000, host='0.0.0.0')
+

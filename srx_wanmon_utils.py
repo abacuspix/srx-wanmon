@@ -166,3 +166,12 @@ def collectIPMStatus (device_connection):
 
 
 
+
+
+'''
+d = Device(host='172.16.237.98', user='root', password='Welcome!')
+
+d.open()
+
+print collectIPMStatus(d)
+'''
