@@ -9,7 +9,7 @@ import time
 
 
 
-from srx_wanmon_utils import if_fw_state_count, ifstats, routeFinder, if_fw_states, collectRPMStats
+from srx_wanmon_utils import if_fw_state_count, ifstats, routeFinder, if_fw_states, collectRPMStats, collectIPMStatus
 
 from flask import jsonify
 
@@ -24,8 +24,6 @@ def collectStats (device):
     global device_stats
 
     gr_stat_dict = ifstats(device, "gr-0/0/0.0")
-
-    #print gr_stat_dict
 
     device_stats["gr_if"] = gr_stat_dict
 
@@ -43,8 +41,6 @@ def collectStats (device):
 
     device_stats["rpm_results"] = collectRPMStats(device)
 
-    print device_stats["rpm_results"]
-
     device_stats["prime_if_fw_state_count"] = if_fw_state_count(device , "gr-0/0/0.0")
 
     device_stats["alt_if_fw_state_count"] = if_fw_state_count(device , "st0.0")
@@ -54,6 +50,8 @@ def collectStats (device):
     device_sessions["gr-0/0/0.0"] = if_fw_states (device, "gr-0/0/0.0")
 
     device_sessions["st0.0"] = if_fw_states(device, "st0.0")
+
+    device_stats["ipm_status"] = collectIPMStatus(device)
 
     return  device_sessions
 
@@ -105,7 +103,7 @@ def get_sessions():
 
 @app.route('/_get_statistics')
 def get_statistics():
-    return jsonify( rpm_current_probes_percent_lost = device_stats["rpm_results"]["current_probes_percent_lost"] , rpm_current_probes_sent = device_stats["rpm_results"]["current_probes_sent"], rpm_last_probes_percent_lost = device_stats["rpm_results"]["last_probes_percent_lost"] , rpm_last_probes_sent = device_stats["rpm_results"]["last_probes_sent"] , rpm_current_probes_received = device_stats["rpm_results"]["current_probes_received"] , rpm_target_interface =  device_stats["rpm_results"]["target_interface"], rpm_last_probes_received = device_stats["rpm_results"]["last_probes_received"] , rpm_target_address = device_stats["rpm_results"]["target_address"] , alt_if_fw_state_count = device_stats["alt_if_fw_state_count"]["state_count"] , prime_if_fw_state_count = device_stats["prime_if_fw_state_count"]["state_count"], inet_table=device_stats["inet0"]["table"] , inet_route = device_stats["inet0"]["route"] , inet_route_nh = device_stats["inet0"]["nh_if"] , alt_table=device_stats["approute"]["table"] , alt_table_route = device_stats["approute"]["route"] , alt_table_nh = device_stats["approute"]["nh_if"] , gr_if_ibps = device_stats["gr_if"]["ibps"] , gr_if_ipps = device_stats["gr_if"]["ipps"] , gr_if_obps = device_stats["gr_if"]["obps"] , gr_if_opps =  device_stats["gr_if"]["opps"] , st_if_ibps = device_stats["st_if"]["ibps"] , st_if_ipps = device_stats["st_if"]["ipps"] , st_if_obps = device_stats["st_if"]["obps"] , st_if_opps = device_stats["st_if"]["opps"] )
+    return jsonify( ipm_status = device_stats["ipm_status"] , rpm_current_probes_percent_lost = device_stats["rpm_results"]["current_probes_percent_lost"] , rpm_current_probes_sent = device_stats["rpm_results"]["current_probes_sent"], rpm_last_probes_percent_lost = device_stats["rpm_results"]["last_probes_percent_lost"] , rpm_last_probes_sent = device_stats["rpm_results"]["last_probes_sent"] , rpm_current_probes_received = device_stats["rpm_results"]["current_probes_received"] , rpm_target_interface =  device_stats["rpm_results"]["target_interface"], rpm_last_probes_received = device_stats["rpm_results"]["last_probes_received"] , rpm_target_address = device_stats["rpm_results"]["target_address"] , alt_if_fw_state_count = device_stats["alt_if_fw_state_count"]["state_count"] , prime_if_fw_state_count = device_stats["prime_if_fw_state_count"]["state_count"], inet_table=device_stats["inet0"]["table"] , inet_route = device_stats["inet0"]["route"] , inet_route_nh = device_stats["inet0"]["nh_if"] , alt_table=device_stats["approute"]["table"] , alt_table_route = device_stats["approute"]["route"] , alt_table_nh = device_stats["approute"]["nh_if"] , gr_if_ibps = device_stats["gr_if"]["ibps"] , gr_if_ipps = device_stats["gr_if"]["ipps"] , gr_if_obps = device_stats["gr_if"]["obps"] , gr_if_opps =  device_stats["gr_if"]["opps"] , st_if_ibps = device_stats["st_if"]["ibps"] , st_if_ipps = device_stats["st_if"]["ipps"] , st_if_obps = device_stats["st_if"]["obps"] , st_if_opps = device_stats["st_if"]["opps"] )
 
 @app.route('/')
 def index():
@@ -195,6 +193,11 @@ def index():
 
     </tr>
 
+    <tr>
+    <td>Test Result:</td>
+    <td><div id="ipm_status"></div></td>
+    </tr>
+
     </table>
 
     <br>
@@ -259,6 +262,9 @@ def index():
                     $("#rpm_last_probes_sent").text(data.rpm_last_probes_sent);
                     $("#rpm_last_probes_received").text(data.rpm_last_probes_received);
                     $("#rpm_last_probes_percent_lost").text(data.rpm_last_probes_percent_lost);
+                    $("#ipm_status").text(data.ipm_status);
+
+
 
 
 

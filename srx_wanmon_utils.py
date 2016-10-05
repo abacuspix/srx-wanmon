@@ -132,7 +132,6 @@ def if_fw_states (device_connection, ifName ):
 
 
 def collectRPMStats(device_connection):
-    print "collecting RPM probe stats"
 
     collect_rpm_stats = device_connection.rpc.get_probe_results()
 
@@ -155,6 +154,15 @@ def collectRPMStats(device_connection):
     rpm_results = { "target_address" : target_address , "target_interface" : target_interface , "current_probes_sent" : current_probes_sent, "current_probes_received" : current_probes_received, "current_probes_percent_lost" : current_probes_percent_lost, "last_probes_sent" : last_probes_sent, "last_probes_received" : last_probes_received, "last_probes_percent_lost" : last_probes_percent_lost}
 
     return rpm_results
+
+
+def collectIPMStatus (device_connection):
+
+    collect_IPM_status = device_connection.rpc.get_ip_monitoring_status()
+
+    ipm_status = collect_IPM_status.xpath("./status/probe-status/text()")[0]
+
+    return ipm_status
 
 
 
