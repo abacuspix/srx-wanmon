@@ -8,12 +8,12 @@ import thread
 import time
 
 
+
 from srx_wanmon_utils import if_fw_state_count, ifstats, routeFinder, if_fw_states
 
 from flask import jsonify
 
 from jnpr.junos import Device
-
 
 
 device_stats = {}
@@ -41,12 +41,14 @@ def collectStats (device):
 
     device_stats["approute"] = app_route_dict
 
+    device_stats["rpm_results"] = collectRPMStats(d)
+
     device_stats["prime_if_fw_state_count"] = if_fw_state_count(device , "gr-0/0/0.0")
 
     device_stats["alt_if_fw_state_count"] = if_fw_state_count(device , "st0.0")
 
 
-def collectSessions (device):
+
 
     device_sessions = {}
 
@@ -57,6 +59,7 @@ def collectSessions (device):
     return  device_sessions
 
 device_sessions = {}
+
 
 def statLoop (device):
 
@@ -84,9 +87,7 @@ for d in devices:
 
 thread.start_new_thread( statLoop , (d,)  )
 
-
 app = flask.Flask(__name__)
-
 
 @app.route('/_get_sessions')
 def get_sessions():
@@ -99,30 +100,26 @@ def get_statistics():
 
 @app.route('/')
 def index():
+
+
     return '''
     <html>
     <head>
     <title> SD-WAN Stats </title>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-
     </head>
-
     <body>
-
-
     <table>
     <tr>
-    <td><u><div id="inettable"></div></u></td>
-    <td><u><div id="alttable"></div></u></td>
+    <td><u>''' + device_stats["inet0"]["table"] + '''</u></td>
+    <td><u>''' + device_stats["approute"]["table"] + '''</u></td>
     </tr>
     <tr>
-    <td><div id="inetroute"></div></td>
-    <td><div id="altroute"></div></td>
+    <td>''' + device_stats["inet0"]["route"] + '''</td>
+    <td>''' + device_stats["approute"]["route"] + '''</td>
     </tr>
     <tr>
-    <td><div id="inet_route_nh"></div></td>
-    <td><div id="alt_route_nh"></div></td>
+    <td>''' + device_stats["inet0"]["nh_if"] + '''</td>
+    <td>''' + device_stats["approute"]["nh_if"] + '''</td>
     </tr>
     <tr></tr>
     <tr></tr>
@@ -130,27 +127,28 @@ def index():
     <td>
     <table>
 
-    <tr><td><u><div id="inet_route_nh"></div></u></tr></td>
-    <tr><td>In BPS: <div id="gr_if_ibps"></div> </tr></td>
-    <tr><td>In PPS: <div id="gr_if_ipps"></div> </tr></td>
-    <tr><td>Out BPS: <div id="gr_if_obps"></div> </tr></td>
-    <tr><td>Out PPS: <div id="gr_if_opps"></div> </tr></td>
+    <tr><td><u> ''' + device_stats["inet0"]["nh_if"] + '''</u></tr></td>
+    <tr><td>In BPS: ''' + device_stats["gr_if"]["ibps"]  + ''' </tr></td>
+    <tr><td>In PPS: ''' + device_stats["gr_if"]["ipps"]  + ''' </tr></td>
+    <tr><td>Out BPS: ''' + device_stats["gr_if"]["obps"]  + ''' </tr></td>
+    <tr><td>Out PPS: ''' + device_stats["gr_if"]["opps"]  + ''' </tr></td>
 
     </table>
     </td>
     <td>
     <table>
 
-    <tr><td><u><div id="alt_route_nh"></div></u></tr></td>
-    <tr><td>In BPS: <div id="st_if_ibps"></div> </tr></td>
-    <tr><td>In PPS: <div id="st_if_ipps"></div> </tr></td>
-    <tr><td>Out BPS: <div id="st_if_obps"></div> </tr></td>
-    <tr><td>Out PPS: <div id="st_if_opps"></div> </tr></td>
+    <tr><td><u> ''' + device_stats["approute"]["nh_if"] + '''</u></tr></td>
+    <tr><td>In BPS: ''' + device_stats["st_if"]["ibps"]  + ''' </tr></td>
+    <tr><td>In PPS: ''' + device_stats["st_if"]["ipps"]  + ''' </tr></td>
+    <tr><td>Out BPS: ''' + device_stats["st_if"]["obps"]  + ''' </tr></td>
+    <tr><td>Out PPS: ''' + device_stats["st_if"]["opps"]  + ''' </tr></td>
 
     </table>
     </td>
     </tr>
     </table>
+
     <br>
     <br>
     <table>
@@ -334,5 +332,6 @@ def index():
     </html>
 
     '''
+
 
 app.run(debug=True, port=8000, host='0.0.0.0')
