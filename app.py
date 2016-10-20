@@ -86,7 +86,7 @@ def statLoop (device):
 
 devices = []
 
-devices.append( Device(host='172.16.237.98', user='root', password='Welcome!') )
+devices.append( Device(host='192.168.57.2', user='root', password='Welcome!') )
 
 for d in devices:
     try:
@@ -115,6 +115,24 @@ def index():
     return '''
     <html>
     <head>
+    <style>
+
+    .outer_table {
+        border-radius: 15px;
+        border: 2px solid black;
+        padding: 15px;
+        width: 85%;
+
+    }
+
+    .title_label {
+        padding:5px 0px 25px 0px;
+        text-decoration: underline;
+    }
+
+
+    </style>
+
     <title> SD-WAN Stats </title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
@@ -123,52 +141,80 @@ def index():
     <body>
 
 
-    <table>
+    <table class="outer_table">
     <tr>
-    <td><u><div id="inettable"></div></u></td>
-    <td><u><div id="alttable"></div></u></td>
+    <td class="title_label">Network Traffic</td>
     </tr>
+
     <tr>
+    <td><u>Primary Internet Routing Table: </u></td>
+    <td><div id="inettable"></div></td>
+    <td><u>Alternate Internet Routing Table:</u></td>
+    <td><div id="alttable"></div></td>
+    </tr>
+
+    <tr>
+    <td>Active Route: </td>
     <td><div id="inetroute"></div></td>
+    <td>Active Route: </td>
     <td><div id="altroute"></div></td>
     </tr>
+
     <tr>
+    <td>Via Interface: </td>
     <td><div id="inet_route_nh"></div></td>
+    <td>Via Interface: </td>
     <td><div id="alt_route_nh"></div></td>
     </tr>
+
     <tr></tr>
     <tr></tr>
+
     <tr>
+
     <td>
-    <table>
 
-    <tr><td><u><div id="inet_route_nh"></div></u></tr></td>
-    <tr><td>In BPS: <div id="gr_if_ibps"></div> </tr></td>
-    <tr><td>In PPS: <div id="gr_if_ipps"></div> </tr></td>
-    <tr><td>Out BPS: <div id="gr_if_obps"></div> </tr></td>
-    <tr><td>Out PPS: <div id="gr_if_opps"></div> </tr></td>
 
-    </table>
-    </td>
-    <td>
-    <table>
+    <tr>
 
-    <tr><td><u><div id="alt_route_nh"></div></u></tr></td>
-    <tr><td>In BPS: <div id="st_if_ibps"></div> </tr></td>
-    <tr><td>In PPS: <div id="st_if_ipps"></div> </tr></td>
-    <tr><td>Out BPS: <div id="st_if_obps"></div> </tr></td>
-    <tr><td>Out PPS: <div id="st_if_opps"></div> </tr></td>
+    <td>In BPS: </td> <td> <div id="gr_if_ibps"></div> </td>
+    <td>In BPS: </td> <td> <div id="st_if_ibps"></div> </td>
 
-    </table>
-    </td>
+    </tr>
+
+    <tr>
+
+    <td>In PPS: </td> <td> <div id="gr_if_ipps"></div> </td>
+    <td>In PPS: </td> <td> <div id="st_if_ipps"></div> </td>
+
+    </tr>
+
+    <tr>
+
+    <td>Out BPS: </td> <td> <div id="gr_if_obps"></div> </td>
+    <td>Out BPS: </td> <td> <div id="st_if_obps"></div> </td>
+    </tr>
+
+    <tr>
+    <td>Out PPS: </td> <td> <div id="gr_if_opps"></div> </td>
+    <td>Out PPS: </td> <td> <div id="st_if_opps"></div> </td>
+    </tr>
+
+
+
+
+
+
+
     </tr>
     </table>
 
     <br>
     <br>
 
-    <table>
-    <tr> WAN Performance Statistics </tr>
+    <table class="outer_table">
+
+    <tr> <td class="title_label"> WAN Performance Statistics </td> </tr>
     <tr>
     <td>Monitored IP Address:</td>
     <td><div id="rpm_target_address"></div></td>
@@ -208,7 +254,12 @@ def index():
 
     <br>
     <br>
-    <table>
+    <table class="outer_table">
+
+    <tr>
+    <td class="title_label"> Firewall State Table Entries </td>
+    </tr>
+
     <tr>
     <td>Primary WAN Session Count</td>
     <td>Alternate WAN Session Count</td>
@@ -217,14 +268,21 @@ def index():
     <td><div id="prime_if_fw_state_count"></div</td>
     <td><div id="alt_if_fw_state_count"></div></td>
     </tr>
-    </table>
-    <br>
-    <br>
-    <br>
 
+    <tr>
+    <td>
     <table id="stateTable">
-
     </table>
+    </td>
+    </tr>
+    </table>
+
+
+    <br>
+    <br>
+    <br>
+
+
 
 
     <script type=text/javascript>
@@ -287,6 +345,11 @@ def index():
             $.getJSON("/_get_sessions", function (data) {
                 var stateTable = document.getElementById("stateTable")
                 stateTable.innerHTML = "";
+                //var title_tr = document.createElement("tr");
+                //var title_td_label = document.createElement("td");
+                //var title_td_label_text = document.createTextNode( "State Table Entries" );
+                //title_td_label.appendChild( title_td_label_text );
+                //stateTable.appendChild( title_td_label );
                 $.each( data, function( interface, state ) {
                     var interface_tr = document.createElement("tr");
                     var interface_td_label = document.createElement("td");
