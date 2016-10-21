@@ -13,6 +13,7 @@ from flask import jsonify
 
 from srx_wanmon_utils import if_fw_state_count, ifstats, routeFinder, if_fw_states, collectRPMStats, collectIPMStatus
 
+
 from flask import jsonify
 
 from jnpr.junos import Device
@@ -21,17 +22,48 @@ from jnpr.junos import Device
 device_stats = {}
 
 
-def collectStats (device):
+def collectSessCount (device):
 
+    global device_stats
+
+    device_stats["prime_if_fw_state_count"] = if_fw_state_count(device , "gr-0/0/0.0")
+
+    device_stats["alt_if_fw_state_count"] = if_fw_state_count(device , "st0.0")
+
+
+def gatherRPMStats (device):
+
+    global device_stats
+
+    device_stats["rpm_results"] = collectRPMStats(device)
+
+    device_stats["ipm_status"] = collectIPMStatus(device)
+
+# method to collect interface stats for a given device
+
+def collectGRIfStats (device):
+
+    # store the recorded results in the GLOBAL device_stats dictionary
     global device_stats
 
     gr_stat_dict = ifstats(device, "gr-0/0/0.0")
 
     device_stats["gr_if"] = gr_stat_dict
 
+
+def collectSTIfStats (device):
+
+    # store the recorded results in the GLOBAL device_stats dictionary
+    global device_stats
+
     st_stat_dict = ifstats(device, "st0.0")
 
     device_stats["st_if"] = st_stat_dict
+
+
+def collectRouteStats (device):
+
+    global device_stats
 
     inet0_dict = routeFinder(device, "inet.0")
 
@@ -40,22 +72,6 @@ def collectStats (device):
     app_route_dict = routeFinder(device, "app-route-inet.inet.0")
 
     device_stats["approute"] = app_route_dict
-
-    device_stats["rpm_results"] = collectRPMStats(device)
-
-    device_stats["ipm_status"] = collectIPMStatus(device)
-
-    device_stats["prime_if_fw_state_count"] = if_fw_state_count(device , "gr-0/0/0.0")
-
-    device_stats["alt_if_fw_state_count"] = if_fw_state_count(device , "st0.0")
-
-    device_sessions = {}
-
-    device_sessions["gr-0/0/0.0"] = if_fw_states (device, "gr-0/0/0.0")
-
-    device_sessions["st0.0"] = if_fw_states(device, "st0.0")
-
-    return  device_sessions
 
 
 def collectSessions (device):
@@ -71,31 +87,159 @@ def collectSessions (device):
 
 device_sessions = {}
 
-def statLoop (device):
+
+
+
+def ifGRStatLoop (device):
+    while True:
+        collectGRIfStats(device)
+
+        #time.sleep(1)
+
+def ifSTStatLoop (device):
+    while True:
+        collectSTIfStats(device)
+
+        #time.sleep(1)
+
+def sessionLoop (device):
 
     global device_sessions
 
     while True:
 
-        collectStats(device)
+        try:
+            device_sessions = collectSessions (device)
+        except:
+            device.close()
+            device.open()
 
-        device_sessions = collectSessions (device)
+        time.sleep(10)
+
+def sessionCountLoop (device):
+
+    while True:
+
+        try:
+            collectSessCount (device)
+        except:
+            device.close()
+            device.open()
+
+        time.sleep(10)
+
+def rpmStatLoop (device):
+
+    while True:
+
+        gatherRPMStats(device)
+
+
+def routeStatLoop (device):
+
+    while True:
+        collectRouteStats(device)
+
 
         time.sleep(5)
 
 
-devices = []
 
-devices.append( Device(host='192.168.57.2', user='root', password='Welcome!') )
+fast_dev = Device(host="10.164.0.243", user="root", password="Welcome!")
 
-for d in devices:
-    try:
-        d.open()
-    except:
-        print "Connection to device failed."
+slow_dev = Device(host="10.164.0.243", user="root", password="Welcome!")
 
 
-thread.start_new_thread( statLoop , (d,)  )
+try:
+    fast_dev.open()
+except:
+    print "Fast Connection Failed"
+    exit()
+
+try:
+    slow_dev.open()
+except:
+    print "Slow Connection Failed"
+    exit()
+
+
+
+
+# Create a device connection for stat collection
+
+try:
+
+    # create a thread to collect interface stats from the device
+
+    thread.start_new_thread(ifGRStatLoop, (fast_dev,))
+
+except:
+
+    print "Connection to device failed - GRE Interface Statistic Monitoring Failed."
+    fast_dev.close()
+    raise
+
+
+try:
+
+    # create a thread to collect interface stats from the device
+
+    thread.start_new_thread(ifSTStatLoop, (fast_dev,))
+
+except:
+
+    print "Connection to device failed - IPSec Interface Statistic Monitoring Failed."
+    fast_dev.close()
+    raise
+
+try:
+
+    thread.start_new_thread(routeStatLoop, (fast_dev,))
+
+except:
+    print "Connection to device failed - Route Stat Monitoring Failed."
+    fast_dev.close()
+    raise
+
+try:
+
+    thread.start_new_thread(rpmStatLoop, (fast_dev,))
+
+except:
+    print "Connection to device failed - RPM Stat Monitoring Failed."
+    fast_dev.close()
+    raise
+
+try:
+
+    # create a thread to collect firewall sessions from the device
+
+    thread.start_new_thread(sessionLoop, (slow_dev,))
+
+
+except:
+
+    print "Connection to device failed - Firewall Session Monitoring Failed."
+    slow_dev.close()
+    raise
+
+try:
+
+    # create a thread to collect firewall sessions from the device
+
+    thread.start_new_thread(sessionCountLoop, (fast_dev,))
+
+
+except:
+
+    print "Connection to device failed - Firewall Session Counting Failed."
+    slow_dev.close()
+    raise
+
+
+
+
+
 
 app = flask.Flask(__name__)
 
